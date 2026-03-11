@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Acta Presidencial</title>
+
+    <!-- Telegram Mini App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface2: #334155;
+            --border: #334155;
+            --accent: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --radius: 16px;
+            --radius-sm: 10px;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-btn: 0 10px 25px -5px rgba(59, 130, 246, 0.5);
+        }
+
+        html,
+        body {
+            height: 100%;
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 15px;
+            line-height: 1.4;
+            overscroll-behavior: none;
+        }
+
+        body {
+            padding: 8px 14px 80px;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #0f1a30;
+            border: 1px solid var(--accent);
+            border-radius: 20px;
+            padding: 3px 12px;
+            font-size: 11px;
+            color: var(--accent);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .header h1 {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .chips {
+            margin-top: 6px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .chip {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 3px 10px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .chip span {
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        /* VOTOS GRID */
+        .votos-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        .voto-row {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            display: grid;
+            grid-template-columns: 6px 1fr 100px;
+            align-items: center;
+            gap: 14px;
+            padding: 9px 14px;
+            transition: all .2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .voto-row:focus-within {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .voto-total {
+            background: linear-gradient(145deg, #1e1b4b 0%, var(--bg) 100%);
+            border: 1.5px solid #6366f1;
+        }
+
+        .voto-total:focus-within {
+            border-color: #818cf8;
+        }
+
+        .color-bar {
+            width: 5px;
+            min-height: 30px;
+            border-radius: 3px;
+        }
+
+        .info-label {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .info-sub {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 1px;
+        }
+
+        .info-diff {
+            font-weight: bold;
+            margin-top: 4px;
+            font-size: 12px;
+        }
+
+        .diff-ok {
+            color: var(--success);
+        }
+
+        .diff-err {
+            color: var(--danger);
+        }
+
+        .inp-wrap {
+            display: flex;
+            align-items: center;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            padding: 0 4px;
+        }
+
+        .inp-num {
+            width: 100%;
+            height: 40px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-size: 20px;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            outline: none;
+            -moz-appearance: textfield;
+        }
+
+        .inp-num::-webkit-outer-spin-button,
+        .inp-num::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+        }
+
+        .submit-wrap {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px;
+            background: linear-gradient(to top, var(--bg) 80%, transparent);
+            z-index: 100;
+        }
+
+        .btn-send {
+            width: 100%;
+            height: 56px;
+            border: none;
+            border-radius: var(--radius);
+            background: linear-gradient(135deg, var(--accent), #2563eb);
+            color: #fff;
+            font-size: 17px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: var(--shadow-btn);
+            transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-send:disabled {
+            background: var(--surface2);
+            box-shadow: none;
+            color: var(--muted);
+            cursor: not-allowed;
+            transform: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="badge">ACTA DE ESCRUTINIO</div>
+        <h1>📊 Ingreso de Votos</h1>
+        <div class="chips">
+            <div class="chip">📍 <span id="lbl-distrito">—</span></div>
+            <div class="chip">Mesa <span id="lbl-mesa">—</span></div>
+        </div>
+    </div>
+
+    <div class="votos-grid">
+
+        <!-- TOTAL VOTANTES PRESENTES — PRIMERO -->
+        <div class="voto-row voto-total">
+            <div class="color-bar" style="background:#6366f1"></div>
+            <div>
+                <div class="info-label" style="color:#a5b4fc">Total Votantes Presentes</div>
+                <div class="info-sub" style="color:#818cf8">N° de ciudadanos que votaron</div>
+                <div class="info-diff" id="diff-msg">Completa el formulario para enviar</div>
+            </div>
+            <div class="inp-wrap" style="border-color:#6366f1">
+                <input class="inp-num" id="inp-total_acta" type="number" min="0" value="0" style="color:#c7d2fe"
+                    oninput="sync('total_acta',this)" onfocus="sel(this)">
+            </div>
+        </div>
+
+        <!-- PARTIDOS POLÍTICOS -->
+        <div class="voto-row">
+            <div class="color-bar" style="background:#4f8ef7"></div>
+            <div>
+                <div class="info-label" id="lbl-p1">Partido 1</div>
+                <div class="info-sub">Votos Emitidos</div>
+            </div>
+            <div class="inp-wrap"><input class="inp-num" id="inp-p1" type="number" min="0" value="0"
+                    oninput="sync('p1',this)" onfocus="sel(this)"></div>
+        </div>
+
+        <div class="voto-row">
+            <div class="color-bar" style="background:#ef4444"></div>
+            <div>
+                <div class="info-label" id="lbl-p2">Partido 2</div>
+                <div class="info-sub">Votos Emitidos</div>
+            </div>
+            <div class="inp-wrap"><input class="inp-num" id="inp-p2" type="number" min="0" value="0"
+                    oninput="sync('p2',this)" onfocus="sel(this)"></div>
+        </div>
+
+        <div class="voto-row">
+            <div class="color-bar" style="background:#f59e0b"></div>
+            <div>
+                <div class="info-label" id="lbl-p3">Partido 3</div>
+                <div class="info-sub">Votos Emitidos</div>
+            </div>
+            <div class="inp-wrap"><input class="inp-num" id="inp-p3" type="number" min="0" value="0"
+                    oninput="sync('p3',this)" onfocus="sel(this)"></div>
+        </div>
+
+        <div class="voto-row">
+            <div class="color-bar" style="background:#10b981"></div>
+            <div>
+                <div class="info-label" id="lbl-p4">Partido 4</div>
+                <div class="info-sub">Votos Emitidos</div>
+            </div>
+            <div class="inp-wrap"><input class="inp-num" id="inp-p4" type="number" min="0" value="0"
+                    oninput="sync('p4',this)" onfocus="sel(this)"></div>
+        </div>
+
+        <div class="voto-row">
+            <div class="color-bar" style="background:#8b5cf6"></div>
+            <div>
+                <div class="info-label" id="lbl-p5">Partido 5</div>
+                <div class="info-sub">Votos Emitidos</div>
+            </div>
+            <div class="inp-wrap"><input class="inp-num" id="inp-p5" type="number" min="0" value="0"
+                    oninput="sync('p5',this)" onfocus="sel(this)"></div>
+        </div>
+
+        <div class="voto-row">
+            <div class="color-bar" style="background:#ec4899"></div>
+            <div>
+                <div class="info-label" id="lbl-p6">Partido 6</div>
+                <div class="info-sub">Votos Emitidos</div>
+            </div>
+            <div class="inp-wrap"><input class="inp-num" id="inp-p6" type="number" min="0" value="0"
+                    oninput="sync('p6',this)" onfocus="sel(this)"></div>
+        </div>
+
+
+
+        <div class="voto-row">
+            <div class="color-bar" style="background:#94a3b8"></div>
+            <div>
+                <div class="info-label">Votos en Blanco</div>
+                <div class="info-sub">Cédulas sin marcar</div>
+            </div>
+            <div class="inp-wrap"><input class="inp-num" id="inp-blancos" type="number" min="0" value="0"
+                    oninput="sync('blancos',this)" onfocus="sel(this)"></div>
+        </div>
+
+        <div class="voto-row">
+            <div class="color-bar" style="background:#64748b"></div>
+            <div>
+                <div class="info-label">Votos Nulos</div>
+                <div class="info-sub">Inválidos / impugnados</div>
+            </div>
+            <div class="inp-wrap"><input class="inp-num" id="inp-nulos" type="number" min="0" value="0"
+                    oninput="sync('nulos',this)" onfocus="sel(this)"></div>
+        </div>
+
+    </div>
+
+    <!-- BOTÓN ENVIAR -->
+    <div class="submit-wrap">
+        <button class="btn-send" id="btn-send" onclick="enviar()">
+            📤 ENVIAR ACTA AL SISTEMA
+        </button>
+    </div>
+
+    <script>
+        // ── ESTADO ────────────────────────────────────────────
+        let MAX_VOTOS = 300;
+        const CAMPOS = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'blancos', 'nulos'];
+        const votos = { p1: 0, p2: 0, p3: 0, p4: 0, p5: 0, p6: 0, blancos: 0, nulos: 0 };
+        let totalActa = 0;
+        let votosOtros = 0;
+
+        let idMesa = '';
+
+        (function init() {
+            const p = new URLSearchParams(window.location.search);
+            idMesa = p.get('mesa') || 'DEMO';
+            const electores = parseInt(p.get('electores'));
+            if (!isNaN(electores) && electores > 0) MAX_VOTOS = electores;
+
+            document.getElementById('lbl-mesa').textContent = idMesa;
+            document.getElementById('lbl-distrito').textContent = p.get('distrito') || 'SIN DISTRITO';
+
+            try {
+                const tg = window.Telegram.WebApp;
+                tg.ready(); tg.expand();
+                if (tg.colorScheme === 'light') {
+                    document.documentElement.style.setProperty('--bg', '#f5f7fa');
+                    document.documentElement.style.setProperty('--surface', '#ffffff');
+                    document.documentElement.style.setProperty('--surface2', '#f0f2f5');
+                    document.documentElement.style.setProperty('--border', '#d1d9e0');
+                    document.documentElement.style.setProperty('--text', '#1a202c');
+                    document.documentElement.style.setProperty('--muted', '#6b7280');
+                }
+            } catch (e) { }
+
+            validar();
+        })();
+
+        function sel(el) { setTimeout(() => el.select(), 80); }
+
+        function sync(campo, el) {
+            const v = parseInt(el.value);
+            const valClean = isNaN(v) || v < 0 ? 0 : v;
+
+            if (campo === 'total_acta') {
+                totalActa = valClean;
+            } else {
+                votos[campo] = valClean;
+            }
+            validar();
+        }
+
+        function validar() {
+            const sumaPartidos = CAMPOS.reduce((acc, c) => acc + votos[c], 0);
+            votosOtros = totalActa - sumaPartidos;
+
+            const diffMsg = document.getElementById('diff-msg');
+            const btn = document.getElementById('btn-send');
+
+            const hayAlgunVoto = sumaPartidos > 0 || totalActa > 0;
+
+            if (!hayAlgunVoto) {
+                // Estado inicial: nada llenado todavía
+                diffMsg.textContent = "Completa el formulario para enviar";
+                diffMsg.className = "info-diff";
+                diffMsg.style.color = "var(--muted)";
+                btn.disabled = true;
+            } else if (totalActa === 0) {
+                // Tiene votos pero falta el total
+                diffMsg.textContent = "⚠️ Digita el Total de Votantes";
+                diffMsg.className = "info-diff diff-err";
+                btn.disabled = true;
+            } else if (totalActa > MAX_VOTOS) {
+                // ERROR: totalActa no puede exceder el número de electores hábiles
+                diffMsg.textContent = `🔴⚠️ IMPOSIBLE: Solo hay ${MAX_VOTOS} electores en la mesa`;
+                diffMsg.className = "info-diff diff-err";
+                btn.disabled = true;
+            } else if (votosOtros < 0) {
+                // ERROR: los votos ingresados superan al total declarado
+                diffMsg.textContent = `🚫 Revisa los votos, algo no cuadra (sobran ${Math.abs(votosOtros)})`;
+                diffMsg.className = "info-diff diff-err";
+                btn.disabled = true;
+            } else {
+                // Todo bien: calcula OTROS y habilita envío
+                diffMsg.textContent = `🔢 Calculado para OTROS: ${votosOtros} votos`;
+                diffMsg.className = "info-diff diff-ok";
+                diffMsg.style.color = "";
+                btn.disabled = false;
+            }
+        }
+
+        function enviar() {
+            const payload = {
+                mesa: idMesa,
+                votos: votos,
+                votos_otros: votosOtros,
+                total_acta: totalActa
+            };
+
+            const btn = document.getElementById('btn-send');
+            btn.disabled = true;
+            btn.textContent = 'Enviando...';
+
+            try {
+                window.Telegram.WebApp.sendData(JSON.stringify(payload));
+            } catch (e) {
+                alert('DEMO — Datos a enviar:\n' + JSON.stringify(payload, null, 2));
+                btn.disabled = false;
+                btn.textContent = '📤 ENVIAR ACTA AL SISTEMA';
+            }
+        }
+    </script>
+</body>
+
+</html>
