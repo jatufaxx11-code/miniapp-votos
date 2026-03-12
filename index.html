@@ -47,8 +47,8 @@
         .voto-row {
             background: var(--surface); border: 1px solid var(--border);
             border-radius: var(--radius);
-            display: grid; grid-template-columns: 46px 1fr 100px;
-            align-items: center; gap: 14px; padding: 10px 14px;
+            display: grid; grid-template-columns: 46px 1fr 90px;
+            align-items: center; gap: 10px; padding: 6px 10px;
             transition: all .2s cubic-bezier(0.4,0,0.2,1);
         }
         .voto-row:focus-within {
@@ -56,10 +56,10 @@
             box-shadow: 0 6px 20px rgba(0,0,0,.3); background: #253347;
         }
         .voto-total {
-            background: linear-gradient(145deg,#1e1b4b 0%,#0f172a 100%);
-            border: 1.5px solid #6366f1;
+            background: linear-gradient(145deg,#064e3b 0%,#0f172a 100%);
+            border: 1.5px solid #10b981;
         }
-        .voto-total:focus-within { border-color: #818cf8; background: linear-gradient(145deg,#2a256a,#1e1b4b); }
+        .voto-total:focus-within { border-color: #34d399; background: linear-gradient(145deg,#065f46,#064e3b); }
 
         .voto-invalido { background: rgba(100,116,139,.07); border-color: #475569; }
 
@@ -155,16 +155,16 @@
     <div class="votos-grid">
 
         <!-- TOTAL VOTANTES PRESENTES — PRIMERO (número de firmas en el acta) -->
-        <div class="voto-row voto-total">
-            <div class="party-logo" style="background:linear-gradient(135deg,#6366f1,#4338ca);font-size:22px">👥</div>
+        <div class="voto-row voto-total" style="grid-template-columns: 38px 1fr 80px; padding: 6px 10px;">
+            <div class="party-logo" style="width:38px;height:38px;font-size:20px;background:linear-gradient(135deg,#10b981,#059669)">👥</div>
             <div>
-                <div class="info-label" style="color:#a5b4fc;font-size:14px">Total de Votantes</div>
-                <div class="info-sub" style="color:#818cf8">N° oficial de firmas y huellas del acta</div>
-                <div class="info-diff" id="diff-msg">Completa el formulario para enviar</div>
+                <div class="info-label" style="color:#34d399;font-size:13px">Total Votantes Asistentes</div>
+                <div class="info-sub" style="color:#6ee7b7">Solo votantes asistentes</div>
+                <div class="info-diff" id="diff-msg" style="margin-top:2px;">Completa el formulario para enviar</div>
             </div>
-            <div class="inp-wrap" style="border-color:#6366f1;background:rgba(99,102,241,.1)">
+            <div class="inp-wrap" style="border-color:#10b981;background:rgba(16,185,129,.1)">
                 <input class="inp-num" id="inp-total_acta" type="number" min="0" value="0"
-                    style="color:#c7d2fe;font-size:24px" oninput="sync('total_acta',this)" onfocus="sel(this)">
+                    style="color:#a7f3d0;font-size:20px;height:36px" oninput="sync('total_acta',this)" onfocus="sel(this)">
             </div>
         </div>
 
