@@ -1,245 +1,150 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Acta Presidencial</title>
-
     <!-- Telegram Mini App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
     <style>
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --bg: #0f172a;
-            --surface: #1e293b;
-            --surface2: #334155;
-            --border: #334155;
-            --accent: #3b82f6;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --text: #f8fafc;
-            --muted: #94a3b8;
-            --radius: 16px;
-            --radius-sm: 10px;
-            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-btn: 0 10px 25px -5px rgba(59, 130, 246, 0.5);
+            --bg: #0f172a; --surface: #1e293b; --surface2: #334155;
+            --border: #334155; --accent: #3b82f6; --success: #10b981;
+            --warning: #f59e0b; --danger: #ef4444;
+            --text: #f8fafc; --muted: #94a3b8;
+            --radius: 16px; --radius-sm: 10px;
         }
 
-        html,
-        body {
-            height: 100%;
-            background: var(--bg);
-            color: var(--text);
+        html, body { height: 100%; background: var(--bg); color: var(--text);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-size: 15px;
-            line-height: 1.4;
-            overscroll-behavior: none;
-        }
+            font-size: 15px; overscroll-behavior: none; }
 
-        body {
-            padding: 8px 14px 80px;
-            min-height: 100vh;
-        }
+        body { padding: 8px 14px 90px; min-height: 100vh; }
 
-        .header {
-            text-align: center;
-            margin-bottom: 10px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #0f1a30;
-            border: 1px solid var(--accent);
-            border-radius: 20px;
-            padding: 3px 12px;
-            font-size: 11px;
-            color: var(--accent);
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-        }
-
-        .header h1 {
-            font-size: 17px;
-            font-weight: 700;
-        }
-
-        .chips {
-            margin-top: 6px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .chip {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 3px 10px;
-            font-size: 12px;
-            color: var(--muted);
-        }
-
-        .chip span {
-            color: var(--text);
-            font-weight: 700;
-        }
+        /* HEADER */
+        .header { text-align: center; margin-bottom: 10px; padding-bottom: 8px;
+                  border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .badge { display: inline-flex; align-items: center; gap: 6px;
+                 background: #0f1a30; border: 1px solid var(--accent); border-radius: 20px;
+                 padding: 3px 12px; font-size: 11px; color: var(--accent);
+                 font-weight: 600; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .header h1 { font-size: 17px; font-weight: 700; }
+        .chips { margin-top: 6px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .chip { background: var(--surface); border: 1px solid var(--border);
+                border-radius: 6px; padding: 3px 10px; font-size: 12px; color: var(--muted); }
+        .chip span { color: var(--text); font-weight: 700; }
 
         /* VOTOS GRID */
-        .votos-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-bottom: 14px;
-        }
+        .votos-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+
+        /* Separador de sección */
+        .section-label { font-size: 10px; font-weight: 800; color: var(--muted);
+                         text-transform: uppercase; letter-spacing: 0.8px;
+                         padding: 10px 0 4px; }
 
         .voto-row {
-            background: var(--surface);
-            border: 1px solid var(--border);
+            background: var(--surface); border: 1px solid var(--border);
             border-radius: var(--radius);
-            display: grid;
-            grid-template-columns: 6px 1fr 100px;
-            align-items: center;
-            gap: 14px;
-            padding: 9px 14px;
-            transition: all .2s;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: grid; grid-template-columns: 46px 1fr 100px;
+            align-items: center; gap: 14px; padding: 10px 14px;
+            transition: all .2s cubic-bezier(0.4,0,0.2,1);
         }
-
         .voto-row:focus-within {
-            border-color: var(--accent);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border-color: var(--accent); transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0,0,0,.3); background: #253347;
         }
-
         .voto-total {
-            background: linear-gradient(145deg, #1e1b4b 0%, var(--bg) 100%);
+            background: linear-gradient(145deg,#1e1b4b 0%,#0f172a 100%);
             border: 1.5px solid #6366f1;
         }
+        .voto-total:focus-within { border-color: #818cf8; background: linear-gradient(145deg,#2a256a,#1e1b4b); }
 
-        .voto-total:focus-within {
-            border-color: #818cf8;
-        }
+        .voto-invalido { background: rgba(100,116,139,.07); border-color: #475569; }
 
-        .color-bar {
-            width: 5px;
-            min-height: 30px;
-            border-radius: 3px;
-        }
-
-        .info-label {
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .info-sub {
-            font-size: 11px;
-            color: var(--muted);
-            margin-top: 1px;
-        }
-
-        .info-diff {
-            font-weight: bold;
-            margin-top: 4px;
-            font-size: 12px;
-        }
-
-        .diff-ok {
-            color: var(--success);
-        }
-
-        .diff-err {
-            color: var(--danger);
-        }
-
-        .inp-wrap {
-            display: flex;
-            align-items: center;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            padding: 0 4px;
-        }
-
-        .inp-num {
-            width: 100%;
-            height: 40px;
-            text-align: center;
-            background: transparent;
-            border: none;
-            color: var(--text);
-            font-size: 20px;
-            font-weight: 800;
-            font-variant-numeric: tabular-nums;
-            outline: none;
-            -moz-appearance: textfield;
-        }
-
-        .inp-num::-webkit-outer-spin-button,
-        .inp-num::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-        }
-
-        .submit-wrap {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 16px;
-            background: linear-gradient(to top, var(--bg) 80%, transparent);
-            z-index: 100;
-        }
-
-        .btn-send {
-            width: 100%;
-            height: 56px;
-            border: none;
+        /* Fila dual: Blancos + Nulos en la misma línea */
+        .voto-row-dual {
             border-radius: var(--radius);
-            background: linear-gradient(135deg, var(--accent), #2563eb);
-            color: #fff;
-            font-size: 17px;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: var(--shadow-btn);
-            transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
-            -webkit-tap-highlight-color: transparent;
+            display: flex; align-items: center;
+            padding: 8px 10px; gap: 0;
+        }
+        .dual-half {
+            flex: 1; display: grid;
+            grid-template-columns: 34px 1fr 90px;
+            align-items: center; gap: 8px;
+            padding: 2px 8px;
+        }
+        .dual-half:first-child { padding-left: 0; }
+        .dual-half:last-child  { padding-right: 0; }
+        .dual-sep { width: 1px; height: 38px; background: rgba(255,255,255,.08); flex-shrink: 0; }
+        .dual-info { overflow: hidden; }
+        .party-logo-sm {
+            width: 34px; height: 34px;
+            border-radius: 8px;          /* cuadrado pequeño redondeado */
+            border: 2px solid rgba(255,255,255,.25);
+            box-shadow: 0 1px 4px rgba(0,0,0,.3);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; font-weight: 900; color: white;
+            flex-shrink: 0;
+            overflow: hidden;
         }
 
-        .btn-send:disabled {
-            background: var(--surface2);
-            box-shadow: none;
-            color: var(--muted);
-            cursor: not-allowed;
-            transform: none !important;
+        /* Logo cuadrado redondeado */
+        .party-logo {
+            width: 46px; height: 46px;
+            border-radius: 10px;         /* cuadrado con esquinas suaves */
+            border: 2px solid rgba(255,255,255,0.3);
+            box-shadow: 0 2px 8px rgba(0,0,0,.35);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 900; color: white;
+            flex-shrink: 0;
+            overflow: hidden;
         }
+
+        .info-label { font-size: 13px; font-weight: 700; }
+        .info-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+        .info-diff { font-weight: bold; margin-top: 4px; font-size: 12px; }
+        .diff-ok { color: var(--success); }
+        .diff-err { color: var(--danger); }
+
+        /* INPUT */
+        .inp-wrap {
+            display: flex; align-items: center;
+            background: var(--surface2); border: 1px solid var(--border);
+            border-radius: var(--radius-sm); overflow: hidden; padding: 0 4px;
+        }
+        .inp-num {
+            width: 100%; height: 40px; text-align: center;
+            background: transparent; border: none; color: var(--text);
+            font-size: 20px; font-weight: 800; outline: none;
+            appearance: textfield; -moz-appearance: textfield;
+        }
+        .inp-num::-webkit-outer-spin-button,
+        .inp-num::-webkit-inner-spin-button { appearance: none; -webkit-appearance: none; }
+        .inp-num { appearance: textfield; -moz-appearance: textfield; }
+
+        /* BOTÓN ENVIAR */
+        .submit-wrap {
+            position: fixed; bottom: 0; left: 0; right: 0; padding: 14px 16px;
+            background: linear-gradient(to top, var(--bg) 80%, transparent); z-index: 100;
+        }
+        .btn-send {
+            width: 100%; height: 56px; border: none; border-radius: var(--radius);
+            background: linear-gradient(135deg, var(--accent), #2563eb); color: #fff;
+            font-size: 17px; font-weight: 800; letter-spacing: 0.5px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            box-shadow: 0 10px 25px -5px rgba(59,130,246,.5);
+            transition: all .2s; -webkit-tap-highlight-color: transparent;
+        }
+        .btn-send:disabled { background: var(--surface2); box-shadow: none; color: var(--muted); cursor: not-allowed; }
+        .btn-send:active:not(:disabled) { transform: scale(0.98); }
     </style>
 </head>
-
 <body>
 
     <div class="header">
-        <div class="badge">ACTA DE ESCRUTINIO</div>
+        <div class="badge">⚡ ACTA DE ESCRUTINIO · PRESIDENCIAL 2026</div>
         <h1>📊 Ingreso de Votos</h1>
         <div class="chips">
             <div class="chip">📍 <span id="lbl-distrito">—</span></div>
@@ -249,101 +154,164 @@
 
     <div class="votos-grid">
 
-        <!-- TOTAL VOTANTES PRESENTES — PRIMERO -->
+        <!-- TOTAL VOTANTES PRESENTES — PRIMERO (número de firmas en el acta) -->
         <div class="voto-row voto-total">
-            <div class="color-bar" style="background:#6366f1"></div>
+            <div class="party-logo" style="background:linear-gradient(135deg,#6366f1,#4338ca);font-size:22px">👥</div>
             <div>
-                <div class="info-label" style="color:#a5b4fc">Total Votantes Presentes</div>
-                <div class="info-sub" style="color:#818cf8">N° de ciudadanos que votaron</div>
+                <div class="info-label" style="color:#a5b4fc;font-size:14px">Total de Votantes</div>
+                <div class="info-sub" style="color:#818cf8">N° oficial de firmas y huellas del acta</div>
                 <div class="info-diff" id="diff-msg">Completa el formulario para enviar</div>
             </div>
-            <div class="inp-wrap" style="border-color:#6366f1">
-                <input class="inp-num" id="inp-total_acta" type="number" min="0" value="0" style="color:#c7d2fe"
-                    oninput="sync('total_acta',this)" onfocus="sel(this)">
+            <div class="inp-wrap" style="border-color:#6366f1;background:rgba(99,102,241,.1)">
+                <input class="inp-num" id="inp-total_acta" type="number" min="0" value="0"
+                    style="color:#c7d2fe;font-size:24px" oninput="sync('total_acta',this)" onfocus="sel(this)">
             </div>
         </div>
 
-        <!-- PARTIDOS POLÍTICOS -->
+        <div class="section-label">🏛️ Partidos Políticos</div>
+
+        <!-- P1 - Renovacion Popular -->
         <div class="voto-row">
-            <div class="color-bar" style="background:#4f8ef7"></div>
+            <div class="party-logo" style="padding:0;overflow:hidden;background:linear-gradient(135deg,#0ea5e9,#0284c7)">
+                <img src="logos/p1_renovacion.webp" width="46" height="46"
+                     style="object-fit:cover;display:block"
+                     onerror="this.style.display='none';this.nextSibling.style.display='flex'"
+                     alt="P1">
+                <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:18px;font-weight:900">R</span>
+            </div>
             <div>
-                <div class="info-label" id="lbl-p1">Partido 1</div>
-                <div class="info-sub">Votos Emitidos</div>
+                <div class="info-label">Renovación Popular</div>
+                <div class="info-sub">Rafael López Aliaga Cazorla</div>
             </div>
             <div class="inp-wrap"><input class="inp-num" id="inp-p1" type="number" min="0" value="0"
                     oninput="sync('p1',this)" onfocus="sel(this)"></div>
         </div>
 
+        <!-- P2 - Fuerza Popular -->
         <div class="voto-row">
-            <div class="color-bar" style="background:#ef4444"></div>
+            <div class="party-logo" style="padding:0;overflow:hidden;background:linear-gradient(135deg,#f97316,#ea580c)">
+                <img src="logos/p2_fuerza.webp" width="46" height="46"
+                     style="object-fit:cover;display:block"
+                     onerror="this.style.display='none';this.nextSibling.style.display='flex'"
+                     alt="P2">
+                <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:18px;font-weight:900">K</span>
+            </div>
             <div>
-                <div class="info-label" id="lbl-p2">Partido 2</div>
-                <div class="info-sub">Votos Emitidos</div>
+                <div class="info-label">Fuerza Popular</div>
+                <div class="info-sub">Keiko Sofía Fujimori Higuchi</div>
             </div>
             <div class="inp-wrap"><input class="inp-num" id="inp-p2" type="number" min="0" value="0"
                     oninput="sync('p2',this)" onfocus="sel(this)"></div>
         </div>
 
+        <!-- P3 - Ahora Nacion -->
         <div class="voto-row">
-            <div class="color-bar" style="background:#f59e0b"></div>
+            <div class="party-logo" style="padding:0;overflow:hidden;background:linear-gradient(135deg,#ef4444,#b91c1c)">
+                <img src="logos/p3_ahora.webp" width="46" height="46"
+                     style="object-fit:cover;display:block"
+                     onerror="this.style.display='none';this.nextSibling.style.display='flex'"
+                     alt="P3">
+                <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:18px;font-weight:900">A</span>
+            </div>
             <div>
-                <div class="info-label" id="lbl-p3">Partido 3</div>
-                <div class="info-sub">Votos Emitidos</div>
+                <div class="info-label">Ahora Nación</div>
+                <div class="info-sub">Alfonso López-Chau Natividad</div>
             </div>
             <div class="inp-wrap"><input class="inp-num" id="inp-p3" type="number" min="0" value="0"
                     oninput="sync('p3',this)" onfocus="sel(this)"></div>
         </div>
 
+        <!-- P4 - Podemos Peru -->
         <div class="voto-row">
-            <div class="color-bar" style="background:#10b981"></div>
+            <div class="party-logo" style="padding:0;overflow:hidden;background:linear-gradient(135deg,#a855f7,#7e22ce)">
+                <img src="logos/p4_podemos.webp" width="46" height="46"
+                     style="object-fit:cover;display:block"
+                     onerror="this.style.display='none';this.nextSibling.style.display='flex'"
+                     alt="P4">
+                <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:18px;font-weight:900">P</span>
+            </div>
             <div>
-                <div class="info-label" id="lbl-p4">Partido 4</div>
-                <div class="info-sub">Votos Emitidos</div>
+                <div class="info-label">Podemos Perú</div>
+                <div class="info-sub">José Luna Gálvez</div>
             </div>
             <div class="inp-wrap"><input class="inp-num" id="inp-p4" type="number" min="0" value="0"
                     oninput="sync('p4',this)" onfocus="sel(this)"></div>
         </div>
 
+        <!-- P5 - Alianza Para el Progreso -->
         <div class="voto-row">
-            <div class="color-bar" style="background:#8b5cf6"></div>
+            <div class="party-logo" style="padding:0;overflow:hidden;background:linear-gradient(135deg,#3b82f6,#1d4ed8)">
+                <img src="logos/p5_alianza.webp" width="46" height="46"
+                     style="object-fit:cover;display:block"
+                     onerror="this.style.display='none';this.nextSibling.style.display='flex'"
+                     alt="P5">
+                <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:18px;font-weight:900">A</span>
+            </div>
             <div>
-                <div class="info-label" id="lbl-p5">Partido 5</div>
-                <div class="info-sub">Votos Emitidos</div>
+                <div class="info-label">Alianza P. el Progreso</div>
+                <div class="info-sub">César Acuña Peralta</div>
             </div>
             <div class="inp-wrap"><input class="inp-num" id="inp-p5" type="number" min="0" value="0"
                     oninput="sync('p5',this)" onfocus="sel(this)"></div>
         </div>
 
+        <!-- P6 - P. Buen Gobierno -->
         <div class="voto-row">
-            <div class="color-bar" style="background:#ec4899"></div>
+            <div class="party-logo" style="padding:0;overflow:hidden;background:linear-gradient(135deg,#eab308,#a16207)">
+                <img src="logos/p6_buen_gobierno.webp" width="46" height="46"
+                     style="object-fit:cover;display:block"
+                     onerror="this.style.display='none';this.nextSibling.style.display='flex'"
+                     alt="P6">
+                <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:18px;font-weight:900">B</span>
+            </div>
             <div>
-                <div class="info-label" id="lbl-p6">Partido 6</div>
-                <div class="info-sub">Votos Emitidos</div>
+                <div class="info-label">P. Buen Gobierno</div>
+                <div class="info-sub">Jorge Nieto Montesinos</div>
             </div>
             <div class="inp-wrap"><input class="inp-num" id="inp-p6" type="number" min="0" value="0"
                     oninput="sync('p6',this)" onfocus="sel(this)"></div>
         </div>
 
-
-
+        <!-- P7 - Pais para Todos -->
         <div class="voto-row">
-            <div class="color-bar" style="background:#94a3b8"></div>
-            <div>
-                <div class="info-label">Votos en Blanco</div>
-                <div class="info-sub">Cédulas sin marcar</div>
+            <div class="party-logo" style="padding:0;overflow:hidden;background:linear-gradient(135deg,#14b8a6,#0d9488)">
+                <img src="../logos/p7_pais.webp" width="46" height="46"
+                     style="object-fit:cover;display:block"
+                     onerror="this.style.display='none';this.nextSibling.style.display='flex'"
+                     alt="P7">
+                <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:18px;font-weight:900">T</span>
             </div>
-            <div class="inp-wrap"><input class="inp-num" id="inp-blancos" type="number" min="0" value="0"
-                    oninput="sync('blancos',this)" onfocus="sel(this)"></div>
+            <div>
+                <div class="info-label">País para Todos</div>
+                <div class="info-sub">Carlos Gonsalo Álvarez Loayza</div>
+            </div>
+            <div class="inp-wrap"><input class="inp-num" id="inp-p7" type="number" min="0" value="0"
+                    oninput="sync('p7',this)" onfocus="sel(this)"></div>
         </div>
 
-        <div class="voto-row">
-            <div class="color-bar" style="background:#64748b"></div>
-            <div>
-                <div class="info-label">Votos Nulos</div>
-                <div class="info-sub">Inválidos / impugnados</div>
+        <div class="section-label">⬜ Votos No Válidos</div>
+
+        <!-- BLANCOS + NULOS en la misma fila -->
+        <div class="voto-row-dual voto-invalido">
+            <div class="dual-half">
+                <div class="party-logo-sm" style="background:linear-gradient(135deg,#64748b,#475569)">⬜</div>
+                <div class="dual-info">
+                    <div class="info-label">En Blanco</div>
+                    <div class="info-sub">Sin marca</div>
+                </div>
+                <div class="inp-wrap"><input class="inp-num" id="inp-blancos" type="number" min="0" value="0"
+                        oninput="sync('blancos',this)" onfocus="sel(this)"></div>
             </div>
-            <div class="inp-wrap"><input class="inp-num" id="inp-nulos" type="number" min="0" value="0"
-                    oninput="sync('nulos',this)" onfocus="sel(this)"></div>
+            <div class="dual-sep"></div>
+            <div class="dual-half">
+                <div class="party-logo-sm" style="background:linear-gradient(135deg,#374151,#1f2937)">❌</div>
+                <div class="dual-info">
+                    <div class="info-label">Nulos</div>
+                    <div class="info-sub">Marcas inv.</div>
+                </div>
+                <div class="inp-wrap"><input class="inp-num" id="inp-nulos" type="number" min="0" value="0"
+                        oninput="sync('nulos',this)" onfocus="sel(this)"></div>
+            </div>
         </div>
 
     </div>
@@ -356,13 +324,19 @@
     </div>
 
     <script>
-        // ── ESTADO ────────────────────────────────────────────
+        // ── ESTADO ──────────────────────────────────────────────────────────
+        // ORDEN OFICIAL P1→P7 coincide exactamente con la DB:
+        // p1=Renovación Popular, p2=Fuerza Popular, p3=Ahora Nación,
+        // p4=Podemos Perú, p5=Alianza P.Progreso, p6=P.Buen Gobierno,
+        // p7=País para Todos
         let MAX_VOTOS = 300;
-        const CAMPOS = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'blancos', 'nulos'];
-        const votos = { p1: 0, p2: 0, p3: 0, p4: 0, p5: 0, p6: 0, blancos: 0, nulos: 0 };
-        let totalActa = 0;
-        let votosOtros = 0;
+        const CAMPOS_PARTIDOS = ['p1','p2','p3','p4','p5','p6','p7'];
+        const CAMPOS_INVALIDOS = ['blancos','nulos'];
+        const CAMPOS_TODOS = [...CAMPOS_PARTIDOS, ...CAMPOS_INVALIDOS];
 
+        const votos = { p1:0, p2:0, p3:0, p4:0, p5:0, p6:0, p7:0, blancos:0, nulos:0 };
+        let totalActa  = 0;
+        let votosOtros = 0;
         let idMesa = '';
 
         (function init() {
@@ -371,21 +345,21 @@
             const electores = parseInt(p.get('electores'));
             if (!isNaN(electores) && electores > 0) MAX_VOTOS = electores;
 
-            document.getElementById('lbl-mesa').textContent = idMesa;
+            document.getElementById('lbl-mesa').textContent    = idMesa;
             document.getElementById('lbl-distrito').textContent = p.get('distrito') || 'SIN DISTRITO';
 
             try {
                 const tg = window.Telegram.WebApp;
                 tg.ready(); tg.expand();
                 if (tg.colorScheme === 'light') {
-                    document.documentElement.style.setProperty('--bg', '#f5f7fa');
-                    document.documentElement.style.setProperty('--surface', '#ffffff');
-                    document.documentElement.style.setProperty('--surface2', '#f0f2f5');
-                    document.documentElement.style.setProperty('--border', '#d1d9e0');
-                    document.documentElement.style.setProperty('--text', '#1a202c');
-                    document.documentElement.style.setProperty('--muted', '#6b7280');
+                    document.documentElement.style.setProperty('--bg','#f5f7fa');
+                    document.documentElement.style.setProperty('--surface','#ffffff');
+                    document.documentElement.style.setProperty('--surface2','#f0f2f5');
+                    document.documentElement.style.setProperty('--border','#d1d9e0');
+                    document.documentElement.style.setProperty('--text','#1a202c');
+                    document.documentElement.style.setProperty('--muted','#6b7280');
                 }
-            } catch (e) { }
+            } catch(e) {}
 
             validar();
         })();
@@ -394,76 +368,73 @@
 
         function sync(campo, el) {
             const v = parseInt(el.value);
-            const valClean = isNaN(v) || v < 0 ? 0 : v;
-
-            if (campo === 'total_acta') {
-                totalActa = valClean;
-            } else {
-                votos[campo] = valClean;
-            }
+            const val = isNaN(v) || v < 0 ? 0 : v;
+            if (campo === 'total_acta') totalActa = val;
+            else votos[campo] = val;
             validar();
         }
 
         function validar() {
-            const sumaPartidos = CAMPOS.reduce((acc, c) => acc + votos[c], 0);
-            votosOtros = totalActa - sumaPartidos;
+            // Suma de TODOS los votos ingresados
+            const sumaTotal = CAMPOS_TODOS.reduce((a,c) => a + votos[c], 0);
+            // Otros = lo que queda sin asignar (no debe ser negativo)
+            votosOtros = totalActa - sumaTotal;
 
             const diffMsg = document.getElementById('diff-msg');
-            const btn = document.getElementById('btn-send');
+            const btn     = document.getElementById('btn-send');
+            const hayVoto = sumaTotal > 0 || totalActa > 0;
 
-            const hayAlgunVoto = sumaPartidos > 0 || totalActa > 0;
-
-            if (!hayAlgunVoto) {
-                // Estado inicial: nada llenado todavía
-                diffMsg.textContent = "Completa el formulario para enviar";
-                diffMsg.className = "info-diff";
-                diffMsg.style.color = "var(--muted)";
+            if (!hayVoto) {
+                diffMsg.textContent = 'Completa el formulario para enviar';
+                diffMsg.className   = 'info-diff';
+                diffMsg.style.color = 'var(--muted)';
                 btn.disabled = true;
             } else if (totalActa === 0) {
-                // Tiene votos pero falta el total
-                diffMsg.textContent = "⚠️ Digita el Total de Votantes";
-                diffMsg.className = "info-diff diff-err";
+                diffMsg.textContent = '⚠️ Digita el Total de Votantes (número de firmas)';
+                diffMsg.className   = 'info-diff diff-err';
                 btn.disabled = true;
             } else if (totalActa > MAX_VOTOS) {
-                // ERROR: totalActa no puede exceder el número de electores hábiles
-                diffMsg.textContent = `🔴⚠️ IMPOSIBLE: Solo hay ${MAX_VOTOS} electores en la mesa`;
-                diffMsg.className = "info-diff diff-err";
+                diffMsg.textContent = `🔴 IMPOSIBLE: Solo hay ${MAX_VOTOS} electores hábiles en esta mesa`;
+                diffMsg.className   = 'info-diff diff-err';
                 btn.disabled = true;
             } else if (votosOtros < 0) {
-                // ERROR: los votos ingresados superan al total declarado
-                diffMsg.textContent = `🚫 Revisa los votos, algo no cuadra (sobran ${Math.abs(votosOtros)})`;
-                diffMsg.className = "info-diff diff-err";
+                diffMsg.textContent = `🚫 Los votos suman de más (${Math.abs(votosOtros)} de exceso). Revisa.`;
+                diffMsg.className   = 'info-diff diff-err';
                 btn.disabled = true;
+            } else if (votosOtros > 0) {
+                diffMsg.textContent = `🔢 Otros partidos (calculado): ${votosOtros} votos`;
+                diffMsg.className   = 'info-diff diff-ok';
+                diffMsg.style.color = '';
+                btn.disabled = false;
             } else {
-                // Todo bien: calcula OTROS y habilita envío
-                diffMsg.textContent = `🔢 Calculado para OTROS: ${votosOtros} votos`;
-                diffMsg.className = "info-diff diff-ok";
-                diffMsg.style.color = "";
+                diffMsg.textContent = '✅ Cuadra perfecto (Otros = 0)';
+                diffMsg.className   = 'info-diff diff-ok';
+                diffMsg.style.color = '';
                 btn.disabled = false;
             }
         }
 
         function enviar() {
             const payload = {
-                mesa: idMesa,
-                votos: votos,
+                mesa:       idMesa,
+                votos:      { ...votos },   // p1…p7, blancos, nulos
                 votos_otros: votosOtros,
-                total_acta: totalActa
+                total_acta:  totalActa
             };
 
             const btn = document.getElementById('btn-send');
-            btn.disabled = true;
-            btn.textContent = 'Enviando...';
+            btn.disabled    = true;
+            btn.textContent = '⏳ Enviando...';
 
             try {
                 window.Telegram.WebApp.sendData(JSON.stringify(payload));
-            } catch (e) {
+            } catch(e) {
+                // Modo demo (fuera de Telegram)
                 alert('DEMO — Datos a enviar:\n' + JSON.stringify(payload, null, 2));
-                btn.disabled = false;
+                btn.disabled    = false;
                 btn.textContent = '📤 ENVIAR ACTA AL SISTEMA';
             }
         }
     </script>
 </body>
-
 </html>
